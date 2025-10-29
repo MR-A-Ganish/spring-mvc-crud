@@ -1,66 +1,55 @@
-async function loadItems() {
-  const res = await fetch('/get_items');
+const baseURL = "http://localhost:8080/InventoryManagementSystem";
+
+// Fetch and display inventory
+async function displayInventory() {
+  const res = await fetch(${baseURL}/viewInventory);
   const data = await res.json();
-  const tbody = document.querySelector('#inventoryTable tbody');
-  tbody.innerHTML = '';
-
-  let totalItems = data.length;
-  let totalQty = 0;
-  let totalValue = 0;
-
-  data.forEach(item => {
-    totalQty += item[3];
-    totalValue += item[3] * item[4];
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${item[0]}</td>
-      <td>${item[1]}</td>
-      <td>${item[2]}</td>
-      <td>${item[3]}</td>
-      <td>₹${item[4]}</td>
-      <td>${item[5]}</td>
+  const tbody = document.querySelector("#inventoryTable tbody");
+  tbody.innerHTML = "";
+  data.forEach((item, i) => {
+    const row = `<tr>
+      <td>${item.sku}</td>
+      <td>${item.name}</td>
+      <td>${item.category}</td>
+      <td>${item.quantity}</td>
+      <td>${item.supplier}</td>
+      <td>${item.price}</td>
+      <td>${item.location}</td>
       <td>
-        <button onclick="deleteItem(${item[0]})"><i class='fas fa-trash'></i></button>
+        <button class="edit" onclick="fillForm('${item.sku}')">Edit</button>
+        <button class="delete" onclick="deleteItem('${item.sku}')">Delete</button>
       </td>
-    `;
-    tbody.appendChild(tr);
+    </tr>`;
+    tbody.insertAdjacentHTML("beforeend", row);
   });
-
-  document.getElementById('totalItems').textContent = totalItems;
-  document.getElementById('totalQty').textContent = totalQty;
-  document.getElementById('totalValue').textContent = '₹' + totalValue.toFixed(2);
 }
 
-async function addItem() {
-  const data = {
-    product_name: document.getElementById('product_name').value,
-    category: document.getElementById('category').value,
-    quantity: parseInt(document.getElementById('quantity').value),
-    price: parseFloat(document.getElementById('price').value),
-    location: document.getElementById('location').value
-  };
-
-  if (!data.product_name || !data.quantity || !data.price) {
-    alert("Please fill all required fields!");
-    return;
-  }
-
-  await fetch('/add_item', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(data)
+// Add or update item
+document.querySelector("#inventoryForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const res = await fetch(${baseURL}/addItem, {
+    method: "POST",
+    body: formData
   });
+  const result = await res.json();
+  alert(result.message || result.error);
+  displayInventory();
+});
 
-  document.querySelectorAll('input').forEach(i => i.value = '');
-  loadItems();
+// Delete item
+async function deleteItem(sku) {
+  if (!confirm("Delete item " + sku + "?")) return;
+  const res = await fetch(${baseURL}/deleteItem?sku=${sku}, { method: "DELETE" });
+  const result = await res.json();
+  alert(result.message || result.error);
+  displayInventory();
 }
 
-async function deleteItem(id) {
-  if (confirm('Are you sure you want to delete this item?')) {
-    await fetch(`/delete_item/${id}`, { method: 'DELETE' });
-    loadItems();
-  }
+// Fill form for editing (frontend only)
+function fillForm(sku) {
+  alert("Editing mode not yet connected to backend update.");
 }
 
-window.onload = loadItems;
+// Initial load
+displayInventory();
