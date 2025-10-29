@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Management System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="sidebar">
+    <h2>IMS</h2>
+    <ul>
+      <li class="active">Dashboard</li>
+      <li id="add-btn">Add Item</li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <h1>Inventory Dashboard</h1>
+      <input type="text" id="search" placeholder="Search products..." />
+    </header>
+
+    <section class="inventory-section">
+      <table>
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Location</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-body"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ADD ITEM MODAL -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2>Add New Item</h2>
+      <input type="text" id="sku" placeholder="SKU" />
+      <input type="text" id="product_name" placeholder="Product Name" />
+      <input type="text" id="category" placeholder="Category" />
+      <input type="number" id="quantity" placeholder="Quantity" />
+      <input type="number" id="price" placeholder="Price" />
+      <input type="text" id="location" placeholder="Location" />
+      <div class="btn-group">
+        <button id="save-item">Save</button>
+        <button id="close-modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
